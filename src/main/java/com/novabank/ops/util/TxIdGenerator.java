@@ -4,12 +4,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 /**
  * 거래번호 생성기.
@@ -33,12 +33,11 @@ public class TxIdGenerator {
 
     /** 무작위 바이트를 Base64 로 바꾼 뒤 영숫자만 추려 쓴다 */
     private String randomAlphaNumeric(int length) {
-        BASE64Encoder encoder = new BASE64Encoder();
         StringBuilder sb = new StringBuilder();
         while (sb.length() < length) {
             byte[] bytes = new byte[12];
             random.nextBytes(bytes);
-            String encoded = encoder.encode(bytes);
+            String encoded = Base64.getEncoder().encodeToString(bytes);
             for (int i = 0; i < encoded.length() && sb.length() < length; i++) {
                 char ch = Character.toUpperCase(encoded.charAt(i));
                 if (Character.isLetterOrDigit(ch) && ch < 128) {

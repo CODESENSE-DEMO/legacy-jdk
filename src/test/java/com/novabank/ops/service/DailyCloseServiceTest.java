@@ -1,13 +1,13 @@
 package com.novabank.ops.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,8 +23,8 @@ public class DailyCloseServiceTest {
     private TransactionService transactionService;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         AccountService accountService = new AccountService();
         ReflectionTestUtils.setField(accountService, "accountRepository", new InMemoryAccountRepository());
         transactionService = new TransactionService();

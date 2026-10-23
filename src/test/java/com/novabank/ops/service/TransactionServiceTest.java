@@ -1,11 +1,12 @@
 package com.novabank.ops.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.novabank.ops.domain.Transaction;
@@ -21,8 +22,8 @@ public class TransactionServiceTest {
     private TransactionService service;
     private AccountService accountService;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         accountService = new AccountService();
         ReflectionTestUtils.setField(accountService, "accountRepository", new InMemoryAccountRepository());
         service = new TransactionService();
@@ -48,29 +49,39 @@ public class TransactionServiceTest {
         assertEquals("", tx.getMemo());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 잔액보다_많이_출금하면_예외() {
-        service.withdraw(ACC, new BigDecimal("3250001"), null);
+    @Test
+    void 잔액보다_많이_출금하면_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.withdraw(ACC, new BigDecimal("3250001"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 출금_한도_초과는_예외() {
-        service.withdraw("110-0917-000006", new BigDecimal("10000001"), null);
+    @Test
+    void 출금_한도_초과는_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.withdraw("110-0917-000006", new BigDecimal("10000001"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 거래정지_계좌는_입금_불가() {
-        service.deposit("110-0917-000005", new BigDecimal("1000"), null);
+    @Test
+    void 거래정지_계좌는_입금_불가() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.deposit("110-0917-000005", new BigDecimal("1000"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 금액_0은_예외() {
-        service.deposit(ACC, BigDecimal.ZERO, null);
+    @Test
+    void 금액_0은_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.deposit(ACC, BigDecimal.ZERO, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 원_단위가_아니면_예외() {
-        service.deposit(ACC, new BigDecimal("100.5"), null);
+    @Test
+    void 원_단위가_아니면_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.deposit(ACC, new BigDecimal("100.5"), null);
+        });
     }
 
     @Test

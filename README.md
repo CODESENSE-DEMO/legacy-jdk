@@ -7,19 +7,19 @@
 
 | 구분 | 내용 |
 |---|---|
-| 언어 | Java 7 (`-source 1.7 -target 1.7`) |
-| 프레임워크 | Spring Framework 4.3 (XML 설정) · Spring MVC |
+| 언어 | Java 21 |
+| 프레임워크 | Spring Framework 6.1 (XML 설정) · Spring MVC |
 | 화면(FE) | JSP 2.3 + JSTL 1.2 + jQuery 1.12 |
 | 서버(BE) | Spring MVC 컨트롤러 · 서비스 · 메모리 저장소 · JSON/XML API |
 | 빌드 | Maven 3, `war` 패키징 |
-| 실행(개발) | `tomcat7-maven-plugin` 내장 톰캣 (Servlet 3.0) |
+| 실행(개발) | `jetty-ee10-maven-plugin` 내장 Jetty 12 (Jakarta Servlet 6.0) |
 | 로깅 | SLF4J + Log4j 1.2 |
 | 기타 | Jackson 2.9(JSON), JAXB(XML 리포트), Joda-Time, Commons Lang 2 |
 | 저장소 | 메모리(기동 시 표본 계좌 6개 생성). 계정계 DB 연동은 2차 과제 |
 
 ## 요구 사항
 
-- JDK 8 (소스/타깃은 1.7). JDK 7 로도 빌드되지만 개발 PC 표준은 8.
+- JDK 21
 - Maven 3.x
 - 인터넷(최초 1회 의존성 다운로드)
 
@@ -29,8 +29,8 @@
 # 빌드 + 단위 테스트
 mvn clean package
 
-# 개발용 내장 톰캣 기동 → http://localhost:8080/novabank/
-mvn tomcat7:run
+# 개발용 내장 서버(Jetty 12) 기동 → http://localhost:8080/novabank/
+mvn jetty:run
 
 # 테스트만
 mvn test
