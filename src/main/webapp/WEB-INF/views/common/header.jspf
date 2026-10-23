@@ -1,0 +1,28 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NovaBank - ${pageTitle}</title>
+    <link rel="stylesheet" href="${ctx}/resources/css/app.css">
+    <script src="${ctx}/resources/js/jquery-1.12.4.min.js"></script>
+    <script src="${ctx}/resources/js/app.js"></script>
+</head>
+<body>
+<div id="wrap">
+    <div id="header">
+        <h1><a href="${ctx}/">NovaBank</a> <small>수신 업무 지원 시스템</small></h1>
+        <ul id="gnb">
+            <li><a href="${ctx}/">대시보드</a></li>
+            <li><a href="${ctx}/accounts">계좌 관리</a></li>
+            <li><a href="${ctx}/transfer">계좌 이체</a></li>
+            <li><a href="${ctx}/loan">대출 계산기</a></li>
+            <li><a href="${ctx}/close">일마감</a></li>
+        </ul>
+    </div>
+    <div id="content">
+        <c:if test="${not empty message}">
+            <div class="alert alert-info">${message}</div>
+        </c:if>

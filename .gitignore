@@ -1,0 +1,19 @@
+target/
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# COA 작업 폴더
+.coa/
