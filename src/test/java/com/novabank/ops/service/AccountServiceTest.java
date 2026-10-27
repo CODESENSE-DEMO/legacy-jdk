@@ -1,13 +1,14 @@
 package com.novabank.ops.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.novabank.ops.domain.Account;
@@ -19,8 +20,8 @@ public class AccountServiceTest {
 
     private AccountService service;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         service = new AccountService();
         ReflectionTestUtils.setField(service, "accountRepository", new InMemoryAccountRepository());
     }
@@ -42,14 +43,18 @@ public class AccountServiceTest {
         assertEquals(7, service.findAll().size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 정기예금은_백만원_미만으로_개설_불가() {
-        service.open("홍길동", "03", new BigDecimal("999999"));
+    @Test
+    void 정기예금은_백만원_미만으로_개설_불가() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.open("홍길동", "03", new BigDecimal("999999"));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 잔액이_있으면_해지_불가() {
-        service.updateStatus("110-0917-000001", "CLOSED");
+    @Test
+    void 잔액이_있으면_해지_불가() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.updateStatus("110-0917-000001", "CLOSED");
+        });
     }
 
     @Test
@@ -65,9 +70,11 @@ public class AccountServiceTest {
         throw new AssertionError("해지 계좌가 되돌려졌다");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 거래정지_계좌는_활성_계좌_조회에서_거부() {
-        service.getActiveAccount("110-0917-000005");
+    @Test
+    void 거래정지_계좌는_활성_계좌_조회에서_거부() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.getActiveAccount("110-0917-000005");
+        });
     }
 
     @Test

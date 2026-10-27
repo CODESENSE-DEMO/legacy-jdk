@@ -3,7 +3,7 @@ package com.novabank.ops.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 금액 유틸. 원 단위 정수 금액만 다룬다.

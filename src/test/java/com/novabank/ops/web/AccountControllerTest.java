@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -21,12 +21,12 @@ import com.novabank.ops.service.AccountService;
 import com.novabank.ops.service.TransactionService;
 import com.novabank.ops.util.TxIdGenerator;
 
-public class AccountControllerTest {
+class AccountControllerTest {
 
     private MockMvc mockMvc;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         AccountService accountService = new AccountService();
         ReflectionTestUtils.setField(accountService, "accountRepository", new InMemoryAccountRepository());
         TransactionService transactionService = new TransactionService();
@@ -49,7 +49,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void 계좌_목록_화면() throws Exception {
+    void 계좌_목록_화면() throws Exception {
         mockMvc.perform(get("/accounts"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("accounts"))
@@ -57,7 +57,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void 계좌_상세_화면() throws Exception {
+    void 계좌_상세_화면() throws Exception {
         mockMvc.perform(get("/accounts/110-0917-000001"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account"))
@@ -65,7 +65,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void 계좌_API_는_JSON() throws Exception {
+    void 계좌_API_는_JSON() throws Exception {
         mockMvc.perform(get("/api/accounts/110-0917-000002"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accountNo").value("110-0917-000002"))
@@ -74,21 +74,21 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void 입금_후_상세로_돌아간다() throws Exception {
+    void 입금_후_상세로_돌아간다() throws Exception {
         mockMvc.perform(post("/accounts/110-0917-000001/deposit").param("amount", "1,000").param("memo", "테스트"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/accounts/110-0917-000001"));
     }
 
     @Test
-    public void 잘못된_입력은_400_오류_화면() throws Exception {
+    void 잘못된_입력은_400_오류_화면() throws Exception {
         mockMvc.perform(post("/accounts/110-0917-000001/withdraw").param("amount", "99,999,999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("error"));
     }
 
     @Test
-    public void 없는_계좌는_400() throws Exception {
+    void 없는_계좌는_400() throws Exception {
         mockMvc.perform(get("/api/accounts/000-0000-000000"))
                 .andExpect(status().isBadRequest());
     }
