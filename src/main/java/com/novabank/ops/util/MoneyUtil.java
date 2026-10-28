@@ -20,7 +20,7 @@ public final class MoneyUtil {
         }
         String digits = text.replace(",", "").trim();
         try {
-            return new BigDecimal(digits).setScale(0, RoundingMode.DOWN);
+            return new BigDecimal(digits).setScale(0, RoundingMode.HALF_UP);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("금액 형식이 올바르지 않습니다: " + text, e);
         }
