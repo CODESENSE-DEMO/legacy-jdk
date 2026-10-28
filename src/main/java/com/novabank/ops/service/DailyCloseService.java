@@ -68,20 +68,10 @@ public class DailyCloseService {
             summary.setCount(summary.getCount() + 1);
             summary.setAmount(summary.getAmount().add(tx.getAmount()));
             switch (tx.getType()) {
-                case DEPOSIT:
-                    report.setDepositAmount(report.getDepositAmount().add(tx.getAmount()));
-                    break;
-                case WITHDRAW:
-                    report.setWithdrawAmount(report.getWithdrawAmount().add(tx.getAmount()));
-                    break;
-                case TRANSFER_OUT:
-                    report.setTransferOutAmount(report.getTransferOutAmount().add(tx.getAmount()));
-                    break;
-                case FEE:
-                    report.setFeeAmount(report.getFeeAmount().add(tx.getAmount()));
-                    break;
-                default:
-                    break;
+                case DEPOSIT -> report.setDepositAmount(report.getDepositAmount().add(tx.getAmount()));
+                case WITHDRAW -> report.setWithdrawAmount(report.getWithdrawAmount().add(tx.getAmount()));
+                case TRANSFER_OUT -> report.setTransferOutAmount(report.getTransferOutAmount().add(tx.getAmount()));
+                default -> { }
             }
         }
         report.getByType().addAll(byType.values());
