@@ -1,6 +1,7 @@
 package com.novabank.ops.tc;
 
 import com.novabank.ops.web.TransferController;
+import com.novabank.ops.web.AccountController;
 import com.novabank.ops.web.GlobalExceptionHandler;
 import com.novabank.ops.service.AccountService;
 import com.novabank.ops.service.TransferService;
@@ -351,36 +352,62 @@ class TransferTcTest {
     @Test
     @DisplayName("TC-04-19 1일 이체 한도 100,000,000원 초과 오류")
     void tc0419_1일이체한도초과() throws Exception {
-        // TransferService를 직접 호출하여 1일 이체 한도 초과 검증
-        TransferService transferService = new TransferService();
-        TransactionService transactionService = new TransactionService();
-        ReflectionTestUtils.setField(transactionService, "transactionRepository", new InMemoryTransactionRepository());
+        // 위키 전제(순서): ① POST 입금 100,000,000 → ② POST 이체 50,000,000 → ③ 같은 이체 한 번 더 → ④ 1,000원 이체는 400
         AccountService accountService = new AccountService();
         ReflectionTestUtils.setField(accountService, "accountRepository", new InMemoryAccountRepository());
+        TransactionService transactionService = new TransactionService();
+        ReflectionTestUtils.setField(transactionService, "transactionRepository", new InMemoryTransactionRepository());
         ReflectionTestUtils.setField(transactionService, "accountService", accountService);
         ReflectionTestUtils.setField(transactionService, "txIdGenerator", new TxIdGenerator());
+        TransferService transferService = new TransferService();
         ReflectionTestUtils.setField(transferService, "transactionService", transactionService);
         ReflectionTestUtils.setField(transferService, "accountService", accountService);
+        TransferController transferController = new TransferController();
+        ReflectionTestUtils.setField(transferController, "transferService", transferService);
+        ReflectionTestUtils.setField(transferController, "accountService", accountService);
+        AccountController accountController = new AccountController();
+        ReflectionTestUtils.setField(accountController, "accountService", accountService);
+        ReflectionTestUtils.setField(accountController, "transactionService", transactionService);
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/WEB-INF/views/");
+        viewResolver.setSuffix(".jsp");
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(accountController, transferController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .setViewResolvers(viewResolver)
+                .build();
 
-        // 000006 계좌 잔액을 158,900,000원으로 증가 (초기 58,900,000 + 100,000,000)
-        Account acct = accountService.getAccount("110-0917-000006");
-        accountService.applyBalance(acct, new BigDecimal("158900000"));
+        // ① 입금 100,000,000 → 잔액 158,900,000
+        mvc.perform(post("/accounts/110-0917-000006/deposit").param("amount", "100000000"))
+                .andExpect(status().is3xxRedirection());
+        mvc.perform(get("/api/accounts/110-0917-000006"))
+                .andExpect(jsonPath("$.balance").value(158900000));
 
-        // 1회 차 이체: 50,000,000원
-        TransferResult r1 = transferService.transfer("110-0917-000006", "110-0917-000001", "NOVA", new BigDecimal("50000000"), "이체 1");
-        assertThat(r1.getTxId(), is(notNullValue()));
-
-        // 2회 차 이체: 50,000,000원
-        TransferResult r2 = transferService.transfer("110-0917-000006", "110-0917-000001", "NOVA", new BigDecimal("50000000"), "이체 2");
-        assertThat(r2.getTxId(), is(notNullValue()));
-
-        // 3회 차 이체: 1,000원 → 1일 이체 한도 초과 오류
-        try {
-            transferService.transfer("110-0917-000006", "110-0917-000001", "NOVA", new BigDecimal("1000"), "이체 3");
-            fail("1일 이체 한도 초과 오류가 발생해야 함");
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("1일 이체 한도를 초과했습니다. 오늘 누계 100000000원, 한도 100000000원"));
+        // ② ③ 당행 이체 50,000,000 두 번 → 200, 누계 100,000,000, 잔액 58,900,000
+        for (int i = 0; i < 2; i++) {
+            mvc.perform(post("/transfer")
+                            .param("fromAccountNo", "110-0917-000006")
+                            .param("toBank", "NOVA")
+                            .param("toAccountNo", "110-0917-000001")
+                            .param("amount", "50000000"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("transfer"));
         }
+        mvc.perform(get("/api/accounts/110-0917-000006"))
+                .andExpect(jsonPath("$.balance").value(58900000));
+
+        // ④ 1,000원 이체 → 400, 1일 한도 초과
+        mvc.perform(post("/transfer")
+                        .param("fromAccountNo", "110-0917-000006")
+                        .param("toBank", "NOVA")
+                        .param("toAccountNo", "110-0917-000001")
+                        .param("amount", "1000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("error"))
+                .andExpect(model().attribute("detail", "1일 이체 한도를 초과했습니다. 오늘 누계 100000000원, 한도 100000000원"));
+
+        // 000001 잔액 103,250,000
+        mvc.perform(get("/api/accounts/110-0917-000001"))
+                .andExpect(jsonPath("$.balance").value(103250000));
     }
 
     // =========================================================================
