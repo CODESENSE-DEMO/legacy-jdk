@@ -74,7 +74,7 @@ public class LoanCalculatorService {
         }
         BigDecimal balance = principal;
         for (int i = 1; i <= n; i++) {
-            BigDecimal interest = MoneyUtil.roundWon(balance.multiply(r));
+            BigDecimal interest = balance.multiply(r).setScale(0, RoundingMode.DOWN);
             BigDecimal principalPart = payment.subtract(interest);
             BigDecimal thisPayment = payment;
             if (i == n || principalPart.compareTo(balance) > 0) {
