@@ -29,13 +29,15 @@ public class HomeController {
     @Autowired
     private DailyCloseService dailyCloseService;
 
+    public static final int RECENT_TX_LIMIT = 10;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home(Model model) {
         model.addAttribute("today", new Date());
         model.addAttribute("report", dailyCloseService.build(new Date()));
         model.addAttribute("accounts", accountService.findAll());
         List<Transaction> recent = transactionService.findAll();
-        model.addAttribute("recent", recent.size() > 10 ? recent.subList(0, 10) : recent);
+        model.addAttribute("recent", recent.size() > RECENT_TX_LIMIT ? recent.subList(0, RECENT_TX_LIMIT) : recent);
         return "index";
     }
 }
