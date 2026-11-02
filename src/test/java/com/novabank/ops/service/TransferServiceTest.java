@@ -1,13 +1,14 @@
 package com.novabank.ops.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.novabank.ops.domain.TransferResult;
@@ -25,7 +26,7 @@ public class TransferServiceTest {
     private AccountService accountService;
     private TransactionService transactionService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         accountService = new AccountService();
         ReflectionTestUtils.setField(accountService, "accountRepository", new InMemoryAccountRepository());
@@ -72,32 +73,42 @@ public class TransferServiceTest {
         assertEquals(new BigDecimal("58900000").subtract(r.getTotalDebit()), accountService.getAccount(FROM).getBalance());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void 일_한도_초과는_예외() {
-        service.transfer(FROM, TO, "NOVA", new BigDecimal("50000000"), null);
-        service.transfer(TO, FROM, "NOVA", new BigDecimal("50000000"), null);   // 되돌려서 잔액 확보
-        service.transfer(FROM, TO, "NOVA", new BigDecimal("50000000"), null);
-        service.transfer(TO, FROM, "NOVA", new BigDecimal("50000000"), null);
-        service.transfer(FROM, TO, "NOVA", new BigDecimal("1"), null);   // 누계 100,000,001
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(FROM, TO, "NOVA", new BigDecimal("50000000"), null);
+            service.transfer(TO, FROM, "NOVA", new BigDecimal("50000000"), null);   // 되돌려서 잔액 확보
+            service.transfer(FROM, TO, "NOVA", new BigDecimal("50000000"), null);
+            service.transfer(TO, FROM, "NOVA", new BigDecimal("50000000"), null);
+            service.transfer(FROM, TO, "NOVA", new BigDecimal("1"), null);   // 누계 100,000,001
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void 회당_한도_초과는_예외() {
-        service.transfer(FROM, TO, "NOVA", new BigDecimal("50000001"), null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(FROM, TO, "NOVA", new BigDecimal("50000001"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void 같은_계좌로는_이체_불가() {
-        service.transfer(FROM, FROM, "NOVA", new BigDecimal("1000"), null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(FROM, FROM, "NOVA", new BigDecimal("1000"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void 거래정지_계좌로는_입금_불가() {
-        service.transfer(FROM, "110-0917-000005", "NOVA", new BigDecimal("1000"), null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(FROM, "110-0917-000005", "NOVA", new BigDecimal("1000"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void 수수료_포함_잔액_부족은_예외() {
-        service.transfer(TO, "123-456-789012", "IBK", new BigDecimal("850000"), null);   // 잔액 850,000 + 수수료
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(TO, "123-456-789012", "IBK", new BigDecimal("850000"), null);   // 잔액 850,000 + 수수료
+        });
     }
 }

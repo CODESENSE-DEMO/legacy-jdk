@@ -1,20 +1,20 @@
 package com.novabank.ops.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TxIdGeneratorTest {
+class TxIdGeneratorTest {
 
     private final TxIdGenerator generator = new TxIdGenerator();
 
     @Test
-    public void 형식은_접두어2_영숫자6_체크2() {
+    void 형식은_접두어2_영숫자6_체크2() {
         String id = generator.generate();
         assertEquals(10, id.length());
         assertTrue(id.startsWith("NB"));
@@ -22,7 +22,7 @@ public class TxIdGeneratorTest {
     }
 
     @Test
-    public void 체크_문자로_오타를_잡는다() {
+    void 체크_문자로_오타를_잡는다() {
         String id = generator.generate();
         assertTrue(generator.isValid(id));
         String typo = id.substring(0, 2) + (id.charAt(2) == 'A' ? 'B' : 'A') + id.substring(3);
@@ -32,7 +32,7 @@ public class TxIdGeneratorTest {
     }
 
     @Test
-    public void 천_번_생성해도_중복이_없다() {
+    void 천_번_생성해도_중복이_없다() {
         Set<String> seen = new HashSet<String>();
         for (int i = 0; i < 1000; i++) {
             seen.add(generator.generate());
@@ -41,7 +41,7 @@ public class TxIdGeneratorTest {
     }
 
     @Test
-    public void 체크섬은_결정적이다() {
+    void 체크섬은_결정적이다() {
         assertEquals(TxIdGenerator.checksum("NBAB12CD"), TxIdGenerator.checksum("NBAB12CD"));
     }
 }

@@ -1,11 +1,12 @@
 package com.novabank.ops.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.novabank.ops.domain.LoanInstallment;
 import com.novabank.ops.domain.LoanSchedule;
@@ -55,13 +56,17 @@ public class LoanCalculatorServiceTest {
         assertEquals("EQUAL_PAYMENT", service.schedule(new BigDecimal("1000000"), new BigDecimal("3"), 6, null).getMethod());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 이율_범위_밖은_예외() {
-        service.schedule(new BigDecimal("1000000"), new BigDecimal("25"), 12, null);
+    @Test
+    void 이율_범위_밖은_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.schedule(new BigDecimal("1000000"), new BigDecimal("25"), 12, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void 개월_수_상한_초과는_예외() {
-        service.schedule(new BigDecimal("1000000"), new BigDecimal("3"), 481, null);
+    @Test
+    void 개월_수_상한_초과는_예외() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.schedule(new BigDecimal("1000000"), new BigDecimal("3"), 481, null);
+        });
     }
 }

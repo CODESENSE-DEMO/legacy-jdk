@@ -5,7 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 /**
  * 날짜 유틸. 화면·API 에서 쓰는 날짜 문자열은 모두 yyyy-MM-dd 다.
@@ -67,7 +68,7 @@ public final class DateUtil {
     }
 
     public static Date toDate(LocalDate localDate) {
-        return localDate == null ? null : localDate.toDate();
+        return localDate == null ? null : java.util.Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     public static LocalDate today() {
