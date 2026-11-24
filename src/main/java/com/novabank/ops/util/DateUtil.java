@@ -16,18 +16,28 @@ public final class DateUtil {
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm";
 
     // 2013-12 성능 이슈로 포맷터를 캐시했다 (매 호출마다 new 하지 않도록)
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
-    private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat(DATETIME_PATTERN);
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat(DATE_PATTERN);
+        }
+    };
+    private static final ThreadLocal<SimpleDateFormat> DATETIME_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat(DATETIME_PATTERN);
+        }
+    };
 
     private DateUtil() {
     }
 
     public static String formatDate(Date date) {
-        return date == null ? "" : DATE_FORMAT.format(date);
+        return date == null ? "" : DATE_FORMAT.get().format(date);
     }
 
     public static String formatDateTime(Date date) {
-        return date == null ? "" : DATETIME_FORMAT.format(date);
+        return date == null ? "" : DATETIME_FORMAT.get().format(date);
     }
 
     public static Date parseDate(String text) {
@@ -35,7 +45,7 @@ public final class DateUtil {
             return null;
         }
         try {
-            return DATE_FORMAT.parse(text.trim());
+            return DATE_FORMAT.get().parse(text.trim());
         } catch (ParseException e) {
             throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다(yyyy-MM-dd): " + text, e);
         }
