@@ -81,4 +81,10 @@ public class AccountServiceTest {
         assertEquals("김*수", service.getAccount("110-0917-000001").getMaskedName());
         assertEquals("(*****사", service.getAccount("110-0917-000006").getMaskedName());
     }
+
+    @Test
+    public void testFromCode_FROZEN() {
+        Account a = service.updateStatus("110-0917-000005", "FROZEN");
+        assertEquals(AccountStatus.FROZEN, a.getStatus());
+    }
 }
