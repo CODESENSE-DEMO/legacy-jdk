@@ -59,7 +59,7 @@ public class TransferServiceTest {
         assertEquals(new BigDecimal("500"), service.calculateFee("KDB", new BigDecimal("99999"), weekdayAt(10)));
         assertEquals(new BigDecimal("800"), service.calculateFee("KDB", new BigDecimal("100000"), weekdayAt(10)));
         assertEquals(new BigDecimal("1500"), service.calculateFee("KDB", new BigDecimal("1000000"), weekdayAt(10)));
-        assertEquals(new BigDecimal("1800"), service.calculateFee("KDB", new BigDecimal("1000000"), weekdayAt(20)));
+        assertEquals(new BigDecimal("1700"), service.calculateFee("KDB", new BigDecimal("1000000"), weekdayAt(20)));
         assertEquals(BigDecimal.ZERO, service.calculateFee("", new BigDecimal("1000000"), weekdayAt(20)));
     }
 

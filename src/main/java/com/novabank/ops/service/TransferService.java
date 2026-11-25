@@ -49,8 +49,8 @@ public class TransferService {
     @Value("${transfer.fee.other.bank.over:1500}")
     private long feeOver = 1500L;
 
-    @Value("${transfer.fee.after.hours.surcharge:300}")
-    private long afterHoursSurcharge = 300L;
+    @Value("${transfer.fee.after.hours.surcharge:200}")
+    private long afterHoursSurcharge = 200L;
 
     public synchronized TransferResult transfer(String fromAccountNo, String toAccountNo, String toBank,
                                                 BigDecimal amount, String memo) {
