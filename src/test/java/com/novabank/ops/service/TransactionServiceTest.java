@@ -55,7 +55,7 @@ public class TransactionServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void 출금_한도_초과는_예외() {
-        service.withdraw("110-0917-000006", new BigDecimal("10000001"), null);
+        service.withdraw("110-0917-000006", new BigDecimal("20000001"), null);
     }
 
     @Test(expected = IllegalArgumentException.class)

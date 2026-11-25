@@ -45,8 +45,8 @@ public class TransactionService {
     @Autowired
     private TxIdGenerator txIdGenerator;
 
-    @Value("${withdraw.limit.per.tx:10000000}")
-    private long withdrawLimitPerTx = 10000000L;
+    @Value("${withdraw.limit.per.tx:20000000}")
+    private long withdrawLimitPerTx = 20000000L;
 
     public synchronized Transaction deposit(String accountNo, BigDecimal amount, String memo) {
         requirePositive(amount);
