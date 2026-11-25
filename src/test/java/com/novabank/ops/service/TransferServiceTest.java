@@ -56,7 +56,7 @@ public class TransferServiceTest {
 
     @Test
     public void 타행_이체_수수료는_금액_구간별이고_영업시간_외_가산() {
-        assertEquals(new BigDecimal("500"), service.calculateFee("KDB", new BigDecimal("99999"), weekdayAt(10)));
+        assertEquals(new BigDecimal("400"), service.calculateFee("KDB", new BigDecimal("99999"), weekdayAt(10)));
         assertEquals(new BigDecimal("800"), service.calculateFee("KDB", new BigDecimal("100000"), weekdayAt(10)));
         assertEquals(new BigDecimal("1500"), service.calculateFee("KDB", new BigDecimal("1000000"), weekdayAt(10)));
         assertEquals(new BigDecimal("1800"), service.calculateFee("KDB", new BigDecimal("1000000"), weekdayAt(20)));

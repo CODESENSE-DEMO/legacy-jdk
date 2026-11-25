@@ -40,8 +40,8 @@ public class TransferService {
     @Value("${transfer.limit.per.day:100000000}")
     private long limitPerDay = 100000000L;
 
-    @Value("${transfer.fee.other.bank.under.100000:500}")
-    private long feeUnder100k = 500L;
+    @Value("${transfer.fee.other.bank.under.100000:400}")
+    private long feeUnder100k = 400L;
 
     @Value("${transfer.fee.other.bank.under.1000000:800}")
     private long feeUnder1m = 800L;
